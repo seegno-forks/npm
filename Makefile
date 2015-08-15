@@ -16,10 +16,6 @@ cli_mandocs = $(shell find doc/cli -name '*.md' \
                |sed 's|doc/cli/|man/man1/|g' ) \
                man/man1/npm-README.1
 
-api_mandocs = $(shell find doc/api -name '*.md' \
-               |sed 's|.md|.3|g' \
-               |sed 's|doc/api/|man/man3/|g' )
-
 files_mandocs = $(shell find doc/files -name '*.md' \
                |sed 's|.md|.5|g' \
                |sed 's|doc/files/|man/man5/|g' ) \
@@ -36,10 +32,6 @@ cli_partdocs = $(shell find doc/cli -name '*.md' \
                 |sed 's|.md|.html|g' \
                 |sed 's|doc/cli/|html/partial/doc/cli/|g' ) \
                 html/partial/doc/README.html
-
-api_partdocs = $(shell find doc/api -name '*.md' \
-                |sed 's|.md|.html|g' \
-                |sed 's|doc/api/|html/partial/doc/api/|g' )
 
 files_partdocs = $(shell find doc/files -name '*.md' \
                   |sed 's|.md|.html|g' \
@@ -58,10 +50,6 @@ cli_htmldocs = $(shell find doc/cli -name '*.md' \
                 |sed 's|doc/cli/|html/doc/cli/|g' ) \
                 html/doc/README.html
 
-api_htmldocs = $(shell find doc/api -name '*.md' \
-                |sed 's|.md|.html|g' \
-                |sed 's|doc/api/|html/doc/api/|g' )
-
 files_htmldocs = $(shell find doc/files -name '*.md' \
                   |sed 's|.md|.html|g' \
                   |sed 's|doc/files/|html/doc/files/|g' ) \
@@ -73,11 +61,11 @@ misc_htmldocs = $(shell find doc/misc -name '*.md' \
                  |sed 's|doc/misc/|html/doc/misc/|g' ) \
                  html/doc/index.html
 
-mandocs = $(api_mandocs) $(cli_mandocs) $(files_mandocs) $(misc_mandocs)
+mandocs = $(cli_mandocs) $(files_mandocs) $(misc_mandocs)
 
-partdocs = $(api_partdocs) $(cli_partdocs) $(files_partdocs) $(misc_partdocs)
+partdocs = $(cli_partdocs) $(files_partdocs) $(misc_partdocs)
 
-htmldocs = $(api_htmldocs) $(cli_htmldocs) $(files_htmldocs) $(misc_htmldocs)
+htmldocs = $(cli_htmldocs) $(files_htmldocs) $(misc_htmldocs)
 
 all: doc
 
@@ -117,7 +105,6 @@ doc-clean:
     .building_marked \
     .building_marked-man \
     html/doc \
-    html/api \
     man
 
 # use `npm install marked-man` for this to work.
@@ -127,10 +114,6 @@ man/man1/npm-README.1: README.md scripts/doc-build.sh package.json
 
 man/man1/%.1: doc/cli/%.md scripts/doc-build.sh package.json
 	@[ -d man/man1 ] || mkdir -p man/man1
-	scripts/doc-build.sh $< $@
-
-man/man3/%.3: doc/api/%.md scripts/doc-build.sh package.json
-	@[ -d man/man3 ] || mkdir -p man/man3
 	scripts/doc-build.sh $< $@
 
 man/man5/npm-json.5: man/man5/package.json.5
@@ -173,10 +156,6 @@ html/doc/files/%.html: html/partial/doc/files/%.html
 	@[ -d html/doc/files ] || mkdir -p html/doc/files
 	scripts/doc-build.sh $< $@
 
-html/doc/api/%.html: html/partial/doc/api/%.html
-	@[ -d html/doc/api ] || mkdir -p html/doc/api
-	scripts/doc-build.sh $< $@
-
 
 html/partial/doc/index.html: doc/misc/npm-index.md $(html_docdeps)
 	@[ -d html/partial/doc ] || mkdir -p html/partial/doc
@@ -188,10 +167,6 @@ html/partial/doc/README.html: README.md $(html_docdeps)
 
 html/partial/doc/cli/%.html: doc/cli/%.md $(html_docdeps)
 	@[ -d html/partial/doc/cli ] || mkdir -p html/partial/doc/cli
-	scripts/doc-build.sh $< $@
-
-html/partial/doc/api/%.html: doc/api/%.md $(html_docdeps)
-	@[ -d html/partial/doc/api ] || mkdir -p html/partial/doc/api
 	scripts/doc-build.sh $< $@
 
 html/partial/doc/files/npm-json.html: html/partial/doc/files/package.json.html
@@ -222,7 +197,7 @@ node_modules/.bin/marked-man:
 
 doc: man
 
-man: $(cli_docs) $(api_docs)
+man: $(cli_docs)
 
 test: doc
 	node cli.js test
